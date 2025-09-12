@@ -1,0 +1,26 @@
+{
+  "name": "test-repo",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "googleHomePageTest.js",
+  "scripts": {
+    "test": "mocha ./tests/*.js --timeout 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IuliiaMaksimova/test-repo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IuliiaMaksimova/test-repo/issues"
+  },
+  "homepage": "https://github.com/IuliiaMaksimova/test-repo#readme",
+  "dependencies": {
+    "chai": "^6.0.1",
+    "mocha": "^11.7.2",
+    "selenium-webdriver": "^4.35.0"
+  }
+}
