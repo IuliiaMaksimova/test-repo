@@ -23,17 +23,18 @@ describe("Google Home Page", function () {
     expect(isVisible).to.be.true;
   });
 
-  it("search query", async function () {
+  it("searching Node.js", async function () {
     const query = "Node.js";
     await googleHome.enterSearchQuery(query);
-    const title = await googleHome.waitForResults(query);
-    expect(title).to.contain(query);
-
+    const links = await googleHome.waitForResults(query);
+    expect(links).to.contain(query);
   });
 
-  it("results searching, results are visible", async function () {
-    const query = "Node.js";
-    const title = await googleHome.waitForResults(query);
-    expect(title).to.contain(query);
-  });
+  it("oficial link Node.js and redirect", async function () {
+  const found = await googleHome.clickResultLink("nodejs.org");
+  expect(found).to.be.true;
+
+  const url = await driver.getCurrentUrl();
+  expect(url).to.include("nodejs.org");
+});
 });
