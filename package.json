@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "googleHomePageTest.js",
+  "main": "nodejsHomePageTest.js",
   "scripts": {
     "test": "mocha ./tests/*.js --timeout 10000"
   },
@@ -22,5 +22,8 @@
     "chai": "^6.0.1",
     "mocha": "^11.7.2",
     "selenium-webdriver": "^4.35.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
   }
 }
