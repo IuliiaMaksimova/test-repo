@@ -24,6 +24,12 @@
   "devDependencies": {
     "chai": "^6.0.1",
     "mocha": "^11.7.2",
+<<<<<<< HEAD
+=======
+    "selenium-webdriver": "^4.35.0"
+  },
+  "devDependencies": {
+>>>>>>> b573a02 (Добавила Prettier, переписала POM и Test для Nodejs.org)
     "prettier": "^3.6.2"
   }
 }
