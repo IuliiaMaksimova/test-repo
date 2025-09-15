@@ -1,21 +1,23 @@
 import { By, until } from "selenium-webdriver";
+import NodejsBasePage from "./baseNodePage.js";
 
 export default class NodejsDownloadPage extends NodejsBasePage {
   constructor(driver) {
-    this.driver = driver;
+    super(driver); // ✅ правильный вызов
     this.pageTitle = By.css("h1");
     this.macOsButton = By.css("a[href*='.pkg']");
   }
 
   async isPageDisplayed() {
-    await this.driver.wait(until.elementLocated(this.pageTitle), 15000);
-    const title = await this.driver.findElement(this.pageTitle);
-    const button = await this.driver.findElement(this.macOsButton);
-
-    const isTitleVisible = await title.isDisplayed();
-    const isButtonVisible = await button.isDisplayed();
-
-    return isTitleVisible && isButtonVisible;
+    const title = await this.driver.wait(
+      until.elementLocated(this.pageTitle),
+      15000,
+    );
+    const button = await this.driver.wait(
+      until.elementLocated(this.macOsButton),
+      10000,
+    );
+    return (await title.isDisplayed()) && (await button.isDisplayed());
   }
 
   async goBack() {
