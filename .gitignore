@@ -1,3 +1,6 @@
 node_modules/
 test-results/
 .DV_Store/
+.nvmrc/
+.prettierrc/
+.vsvode/
