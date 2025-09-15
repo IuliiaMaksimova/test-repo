@@ -1,16 +1,6 @@
 node_modules/
-<<<<<<< HEAD
-<<<<<<< HEAD
 test-results/
-.DV_Store/
 .nvmrc/
 .prettierrc/
-.vsvode/
-=======
-Test results
->>>>>>> b573a02 (Добавила Prettier, переписала POM и Test для Nodejs.org)
-.DS_Store
-=======
-test-results
-.DV_Store
->>>>>>> da7b404 (New baseNodePage and new tests)
+.DS_Store/
+
