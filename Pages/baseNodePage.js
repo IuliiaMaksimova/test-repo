@@ -58,7 +58,7 @@ export default class NodejsBasePage {
       until.elementLocated(locator),
       10000,
     );
-    return await element.isDisplayed();
+    return element.isDisplayed();
   }
 
   async clickElement(locator) {
@@ -72,11 +72,11 @@ export default class NodejsBasePage {
 
   async getAllFooterLinks() {
     await this.driver.wait(until.elementsLocated(this.footerLinks), 10000);
-    return await this.driver.findElements(this.footerLinks);
+    return this.driver.findElements(this.footerLinks);
   }
 
   async getAllHeaderLinks() {
     await this.driver.wait(until.elementsLocated(this.headerLinks), 10000);
-    return await this.driver.findElements(this.headerLinks);
+    return this.driver.findElements(this.headerLinks);
   }
 }

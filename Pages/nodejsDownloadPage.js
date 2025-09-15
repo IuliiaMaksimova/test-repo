@@ -3,7 +3,7 @@ import NodejsBasePage from "./baseNodePage.js";
 
 export default class NodejsDownloadPage extends NodejsBasePage {
   constructor(driver) {
-    super(driver); // ✅ правильный вызов
+    super(driver);
     this.pageTitle = By.css("h1");
     this.macOsButton = By.css("a[href*='.pkg']");
   }

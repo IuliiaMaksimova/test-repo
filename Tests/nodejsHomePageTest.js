@@ -1,4 +1,4 @@
-import { Builder, until } from "selenium-webdriver";
+import { Builder } from "selenium-webdriver";
 import { expect } from "chai";
 import nodejsHomePage from "../Pages/nodejsHomePage.js";
 import nodejsDownloadPage from "../Pages/nodejsDownloadPage.js";
@@ -26,7 +26,7 @@ describe("Nodejs Home Page", function () {
   });
 
   afterEach(async function () {
-    if (this.currentTest && this.currentTest.state === "failed") {
+    if (this.currentTest && this.currentTest.isFailed()) {
       const title = this.currentTest.fullTitle();
       const { screenshotPath, pagePath } = await captureOnFailure(
         driver,

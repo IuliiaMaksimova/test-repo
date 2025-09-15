@@ -22,27 +22,35 @@ export default class NodejsHomePage extends NodejsBasePage {
   }
 
   async isGetNodeButtonDisplayed() {
-    const button = await this.driver.findElement(this.getNodeButton);
-    return button.isDisplayed();
+    const containers = await this.driver.findElements(this.buttonsContainer);
+    if (containers.length === 0) return false;
+
+    const buttons = await this.driver.findElements(this.getNodeButton);
+    return buttons.length > 0 && (await buttons[0].isDisplayed());
   }
 
   async clickGetNodeButton() {
-    const button = await this.driver.findElement(this.getNodeButton);
-    await button.click();
+    const containers = await this.driver.findElements(this.buttonsContainer);
+    if (containers.length === 0) throw new Error("Buttons container not found");
+
+    const buttons = await this.driver.findElements(this.getNodeButton);
+    if (buttons.length === 0) throw new Error("Get Node.js button not found");
+
+    await buttons[0].click();
   }
 
   async isGetSupportButtonDisplayed() {
-    const button = await this.driver.wait(
-      until.elementLocated(this.getSupportButton),
-      10000,
-    );
-    return button.isDisplayed();
+    const buttons = await this.driver.findElements(this.getSupportButton);
+    return buttons.length > 0 && (await buttons[0].isDisplayed());
   }
 
   async clickGetSupportButton() {
-    const button = await this.driver.findElement(this.getSupportButton);
-    await button.click();
+    const buttons = await this.driver.findElements(this.getSupportButton);
+    if (buttons.length === 0) throw new Error("Get Support button not found");
+
+    await buttons[0].click();
   }
+
   async goBack() {
     await this.driver.navigate().back();
     await this.driver.wait(until.elementLocated(this.mainText), 10000);
