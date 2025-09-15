@@ -1,6 +1,5 @@
-node_modules/
-test-results/
-.nvmrc/
-.prettierrc/
-.DS_Store/
-
+node_modules
+test-results
+.nvmrc
+.prettierrc
+.DS_Store
