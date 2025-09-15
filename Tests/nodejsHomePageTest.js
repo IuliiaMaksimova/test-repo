@@ -1,18 +1,24 @@
 import { Builder, until } from "selenium-webdriver";
 import { expect } from "chai";
-import GoogleHomePage from "../Pages/nodejsHomePage.js";
-import { captureOnFailure } from "../saveOnFailure.js";
+import { captureOnFailure } from "../Utils/saveHelpers.js";
 import nodejsHomePage from "../Pages/nodejsHomePage.js";
+import nodejsDownloadPage from "../Pages/nodejsDownloadPage.js";
+import nodejsSupportPage from "../Pages/nodejsSupportPage.js";
 
 describe("Nodejs Home Page", function () {
   this.timeout(30000);
 
   let driver;
-  let nodeHome;;
+  let nodeHome;
+  let downloadPage;
+  let supportPage;
+  let baseNodePage;
 
   before(async function () {
     driver = await new Builder().forBrowser("chrome").build();
     nodeHome = new nodejsHomePage(driver);
+    downloadPage = new nodejsDownloadPage(driver);
+    supportPage = new nodejsSupportPage(driver);
     await nodeHome.open();
   });
 
@@ -21,9 +27,12 @@ describe("Nodejs Home Page", function () {
   });
 
   afterEach(async function () {
-    if (this.currentTest.state === "failed") {
+    if (this.currentTest && this.currentTest.state === "failed") {
       const title = this.currentTest.fullTitle();
-      const { screenshotPath, pagePath } = await captureOnFailure(driver, title);
+      const { screenshotPath, pagePath } = await captureOnFailure(
+        driver,
+        title,
+      );
       console.log("Saved failure artifacts:", screenshotPath, pagePath);
     }
   });
@@ -39,22 +48,24 @@ describe("Nodejs Home Page", function () {
 
     await nodeHome.clickGetNodeButton();
 
-    const currentUrl = await driver.getCurrentUrl();
-    expect(currentUrl).to.include("download");
+    const isDownloadPageVisible = await downloadPage.isPageDisplayed();
+    expect(isDownloadPageVisible).to.be.true;
 
-await nodeHome.goBack();
-
-await driver.wait(until.elementLocated(nodeHome.mainText), 5000);
-});
+    await downloadPage.goBack();
+  });
 
   it("should click Get Support button", async function () {
-  const isVisible = await nodeHome.isGetSupportButtonDisplayed();
-  expect(isVisible).to.be.true;
+    await driver.wait(until.elementLocated(nodeHome.mainText), 10000);
+    const isVisible = await nodeHome.isGetSupportButtonDisplayed();
+    expect(isVisible).to.be.true;
 
-  await nodeHome.clickGetSupportButton();
+    await nodeHome.clickGetSupportButton();
 
-  const currentUrl = await driver.getCurrentUrl();
-  expect(currentUrl).to.include("eol");
+    const isSupportPageVisible = await supportPage.isPageDisplayed();
+    expect(isSupportPageVisible).to.be.true;
 
+    await nodeHome.goBack();
+
+    await driver.wait(until.elementLocated(nodeHome.mainText), 10000);
   });
 });

@@ -19,11 +19,11 @@
   },
   "homepage": "https://github.com/IuliiaMaksimova/test-repo#readme",
   "dependencies": {
-    "chai": "^6.0.1",
-    "mocha": "^11.7.2",
     "selenium-webdriver": "^4.35.0"
   },
   "devDependencies": {
+    "chai": "^6.0.1",
+    "mocha": "^11.7.2",
     "prettier": "^3.6.2"
   }
 }
