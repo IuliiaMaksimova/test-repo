@@ -1,8 +1,9 @@
 import { By, until } from "selenium-webdriver";
 
-export default class NodejsBasePage {
-  constructor(driver) {
+export default class BaseNodePage {
+  constructor(driver, logger = () => {}) {
     this.driver = driver;
+    this.logger = logger;
 
     this.headerContainer = By.className(
       "index-module__MxFfiW__main hidden peer-checked:flex",
@@ -14,9 +15,11 @@ export default class NodejsBasePage {
     this.aboutButton = By.css('a[href="/en/about"]');
     this.downloadButton = By.css('a[href="/en/download"]');
     this.blogButton = By.css('a[href="/en/blog"]');
-    this.docsButton = By.css('a[href="/docs/latest/api/"]');
-    this.getInvolvedButton = By.css('a[href="/en/get-involved"]');
-    this.certificationButton = By.css('a[href="/en/certification"]');
+    this.docsButton = By.css('a[href$="/docs/latest/api/"]');
+    this.getContributeButton = By.className(
+      "index-module__Caicaq__navItem index-module__Caicaq__nav",
+    );
+    this.certificationButton = By.css('a[href$="/openjs/"]');
 
     // Footer links
     this.footerLatestLts = By.css('footer a[href*="/en/download/"]');
@@ -40,11 +43,17 @@ export default class NodejsBasePage {
     this.headerLinks = By.css("header a");
   }
 
+  setLogger(logger) {
+    this.logger = typeof logger === "function" ? logger : () => {};
+  }
+
   async open() {
+    this.logger("Base: open https://nodejs.org");
     await this.driver.get("https://nodejs.org");
   }
 
   async waitForHeader() {
+    this.logger("Base: waitForHeader");
     await this.driver.wait(until.elementLocated(By.css("body")), 15000);
     const header = await this.driver.wait(
       until.elementLocated(this.headerContainer),
@@ -54,6 +63,7 @@ export default class NodejsBasePage {
   }
 
   async isElementVisible(locator) {
+    this.logger(`Base: clickElement ${JSON.stringify(locator)}`);
     const element = await this.driver.wait(
       until.elementLocated(locator),
       10000,
@@ -62,6 +72,7 @@ export default class NodejsBasePage {
   }
 
   async clickElement(locator) {
+    this.logger(`Base: clickElement ${JSON.stringify(locator)}`);
     const element = await this.driver.wait(
       until.elementLocated(locator),
       10000,
@@ -71,12 +82,28 @@ export default class NodejsBasePage {
   }
 
   async getAllFooterLinks() {
+    this.logger(`Base: gelAllFooterLinks`);
     await this.driver.wait(until.elementsLocated(this.footerLinks), 10000);
     return this.driver.findElements(this.footerLinks);
   }
 
   async getAllHeaderLinks() {
+    this.logger(`Base: getAllHeaderlinks`);
     await this.driver.wait(until.elementsLocated(this.headerLinks), 10000);
     return this.driver.findElements(this.headerLinks);
+  }
+
+  async goBack() {
+    this.logger("Base: goBack");
+    const handles = await this.driver.getAllWindowHandles();
+    if (handles.length > 1) {
+      await this.driver.close();
+      const remaining = await this.driver.getAllWindowHandles();
+      const target = remaining[0];
+      await this.driver.switchTo().window(target);
+    } else {
+      await this.driver.navigate().back();
+    }
+    await this.driver.wait(until.elementLocated(By.css("body")), 10000);
   }
 }

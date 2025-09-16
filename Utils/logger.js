@@ -1,21 +1,21 @@
 import fs from "fs";
 import path from "path";
 
-const logDir = path.resolve("test-results/logs");
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir, { recursive: true });
+const LOG_DIR = path.resolve("test-results/logs");
+if (!fs.existsSync(LOG_DIR)) {
+  fs.mkdirSync(LOG_DIR, { recursive: true });
 }
 
-const logFile = path.join(
-  logDir,
-  `test-run-${new Date().toISOString().replace(/[:.]/g, "-")}.log`,
-);
+export function createTestLogger(testTitle) {
+  const safeTitle = String(testTitle || "unnamed")
+    .replace(/[^a-z0-9\-_]/gi, "_")
+    .slice(0, 120);
+  const ts = new Date().toISOString().replace(/[:.]/g, "-");
+  const file = path.join(LOG_DIR, `${safeTitle}__${ts}.log`);
 
-function log(message) {
-  const timestamp = new Date().toISOString();
-  const line = `[${timestamp}] ${message}\n`;
-  fs.appendFileSync(logFile, line);
-  console.log(line.trim()); // в консоль тоже
+  return (message) => {
+    const line = `[${new Date().toISOString()}] ${message}\n`;
+    fs.appendFileSync(file, line);
+    console.log(line.trim());
+  };
 }
-
-export default log;

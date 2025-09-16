@@ -4,6 +4,7 @@ import nodejsHomePage from "../Pages/nodejsHomePage.js";
 import nodejsDownloadPage from "../Pages/nodejsDownloadPage.js";
 import nodejsSupportPage from "../Pages/nodejsSupportPage.js";
 import { captureOnFailure } from "../Utils/saveHelpers.js";
+import { createTestLogger } from "../Utils/logger.js";
 
 describe("Nodejs Home Page", function () {
   this.timeout(30000);
@@ -15,9 +16,13 @@ describe("Nodejs Home Page", function () {
 
   before(async function () {
     driver = await new Builder().forBrowser("chrome").build();
-    nodeHome = new nodejsHomePage(driver);
-    downloadPage = new nodejsDownloadPage(driver);
-    supportPage = new nodejsSupportPage(driver);
+  });
+
+  beforeEach(async function () {
+    this.logger = createTestLogger(this.currentTest.fullTitle());
+    nodeHome = new nodejsHomePage(driver, this.logger);
+    downloadPage = new nodejsDownloadPage(driver, this.logger);
+    supportPage = new nodejsSupportPage(driver, this.logger);
     await nodeHome.open();
   });
 

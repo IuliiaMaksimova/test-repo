@@ -1,6 +1,6 @@
 import { Builder, until } from "selenium-webdriver";
 import { expect } from "chai";
-import NodejsBasePage from "../Pages/baseNodePage.js";
+import BaseNodePage from "../Pages/baseNodePage.js";
 
 describe("Nodejs Header and Footer", function () {
   this.timeout(40000);
@@ -10,7 +10,7 @@ describe("Nodejs Header and Footer", function () {
 
   before(async function () {
     driver = await new Builder().forBrowser("chrome").build();
-    basePage = new NodejsBasePage(driver);
+    basePage = new BaseNodePage(driver);
     await basePage.open();
   });
 
@@ -25,7 +25,7 @@ describe("Nodejs Header and Footer", function () {
     expect(await basePage.isElementVisible(basePage.downloadButton)).to.be.true;
     expect(await basePage.isElementVisible(basePage.blogButton)).to.be.true;
     expect(await basePage.isElementVisible(basePage.docsButton)).to.be.true;
-    expect(await basePage.isElementVisible(basePage.getInvolvedButton)).to.be
+    expect(await basePage.isElementVisible(basePage.getContributeButton)).to.be
       .true;
     expect(await basePage.isElementVisible(basePage.certificationButton)).to.be
       .true;
@@ -45,6 +45,15 @@ describe("Nodejs Header and Footer", function () {
     await basePage.open();
   });
 
+  it("should navigate when clicking a header button (Download)", async function () {
+    await basePage.clickElement(basePage.downloadButton);
+
+    await driver.wait(until.urlContains("/download"), 15000);
+    const url = await driver.getCurrentUrl();
+    expect(url).to.include("/download");
+    await basePage.open();
+  });
+
   it("should navigate when clicking a footer link (Privacy Policy)", async function () {
     await basePage.clickElement(basePage.footerPrivacyPolicy);
     await driver.wait(async () => {
@@ -53,6 +62,17 @@ describe("Nodejs Header and Footer", function () {
     }, 10000);
     const url = await driver.getCurrentUrl();
     expect(url.includes("privacy") || url.includes("openjsf")).to.be.true;
+    await basePage.open();
+  });
+
+  it("should navigate when clicking a footer link (Security Policy)", async function () {
+    await basePage.clickElement(basePage.footerSecurityPolicy);
+    await driver.wait(async () => {
+      const current = await driver.getCurrentUrl();
+      return current.includes("security") || current.includes("openjsf");
+    }, 10000);
+    const url = await driver.getCurrentUrl();
+    expect(url.includes("security") || url.includes("openjsf")).to.be.true;
     await basePage.open();
   });
 });

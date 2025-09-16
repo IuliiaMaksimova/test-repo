@@ -1,28 +1,23 @@
 import { By, until } from "selenium-webdriver";
-import NodejsBasePage from "./baseNodePage.js";
 import BaseNodePage from "./baseNodePage.js";
 
 export default class NodejsSupportPage extends BaseNodePage {
   constructor(driver, logger) {
     super(driver, logger);
-    this.pageTitle = By.css("h1");
-    this.upgradeButton = By.css("a[href*='/download']");
-    this.supportLinks = By.css(
-      'a[href*="security"], a[href*="support"], a[href*="help"], a[href*="eol"]',
-    );
+    this.securityButton = By.css('a[href="/en/security/policy"]');
   }
 
   async isPageDisplayed() {
-    this.logger("Support: isPageDisplayed");
+    this.logger("isPageDisplayed");
     await this.driver.wait(until.elementLocated(By.css("body")), 15000);
     const title = await this.driver.wait(
-      until.elementLocated(this.pageTitle),
+      until.elementLocated(this.securityButton),
       15000,
     );
     const titleVisible = await title.isDisplayed();
-    const links = await this.driver.findElements(this.supportLinks);
+    const links = await this.driver.findElements(this.securityButton);
     const linkVisible = links.length > 0 ? await links[0].isDisplayed() : false;
-    // Consider page displayed if title and at least one relevant support link is visible
+
     return titleVisible && linkVisible;
   }
 }
