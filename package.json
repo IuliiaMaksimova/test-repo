@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/IuliiaMaksimova/test-repo#readme",
   "dependencies": {
-    "selenium-webdriver": "^4.35.0"
+    "selenium-webdriver": "^4.35.0",
+    "simple-logger": "^1.0.1"
   },
   "devDependencies": {
     "chai": "^6.0.1",
@@ -27,4 +28,3 @@
     "prettier": "^3.6.2"
   }
 }
-

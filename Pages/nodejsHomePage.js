@@ -17,19 +17,29 @@ export default class NodejsHomePage extends BaseNodePage {
   }
 
   async isMainTextDisplayed() {
+    this.logger("Home: isMainTextDisplayed");
     const element = await this.driver.findElement(this.mainText);
-    return element.isDisplayed();
+    const isVisible = await element.isDisplayed();
+    this.logger(`Home: main text visible: ${isVisible}`);
+    return isVisible;
   }
 
   async isGetNodeButtonDisplayed() {
+    this.logger("Home: isGetNodeButtonDisplayed");
     const containers = await this.driver.findElements(this.buttonsContainer);
-    if (containers.length === 0) return false;
+    if (containers.length === 0) {
+      this.logger("Home: buttons container not found");
+      return false;
+    }
 
     const buttons = await this.driver.findElements(this.getNodeButton);
-    return buttons.length > 0 && (await buttons[0].isDisplayed());
+    const isVisible = buttons.length > 0 && (await buttons[0].isDisplayed());
+    this.logger(`Home: Get Node button visible: ${isVisible}`);
+    return isVisible;
   }
 
   async clickGetNodeButton() {
+    this.logger("Home: clickGetNodeButton");
     const containers = await this.driver.findElements(this.buttonsContainer);
     if (containers.length === 0) throw new Error("Buttons container not found");
 
@@ -37,47 +47,32 @@ export default class NodejsHomePage extends BaseNodePage {
     if (buttons.length === 0) throw new Error("Get Node.js button not found");
 
     await buttons[0].click();
+    this.logger(
+      "Home: Get Node.js button clicked, navigating to download page",
+    );
   }
 
   async isGetSupportButtonDisplayed() {
+    this.logger("Home: isGetSupportButtonDisplayed");
     const buttons = await this.driver.findElements(this.getSupportButton);
-    return buttons.length > 0 && (await buttons[0].isDisplayed());
+    const isVisible = buttons.length > 0 && (await buttons[0].isDisplayed());
+    this.logger(`Home: Get Support button visible: ${isVisible}`);
+    return isVisible;
   }
 
   async clickGetSupportButton() {
+    this.logger("Home: clickGetSupportButton");
     const buttons = await this.driver.findElements(this.getSupportButton);
     if (buttons.length === 0) throw new Error("Get Support button not found");
 
-    const handlesBefore = await this.driver.getAllWindowHandles();
     await buttons[0].click();
-
-    try {
-      await this.driver.wait(async () => {
-        const handlesAfter = await this.driver.getAllWindowHandles();
-        return handlesAfter.length > handlesBefore.length;
-      }, 10000);
-      const handlesAfter = await this.driver.getAllWindowHandles();
-      const newHandle = handlesAfter.find((h) => !handlesBefore.includes(h));
-      if (newHandle) {
-        await this.driver.switchTo().window(newHandle);
-      }
-    } catch (_) {
-      // If no new window appeared, continue in the same tab
-    }
+    this.logger("Home: Get Support button clicked, navigating to support page");
   }
 
   async goBack() {
-    const handles = await this.driver.getAllWindowHandles();
-    if (handles.length > 1) {
-      const current = await this.driver.getWindowHandle();
-      // Close current tab and switch to the first/original
-      await this.driver.close();
-      const remaining = await this.driver.getAllWindowHandles();
-      const target = remaining[0];
-      await this.driver.switchTo().window(target);
-    } else {
-      await this.driver.navigate().back();
-    }
+    this.logger("Home: goBack");
+    await this.driver.navigate().back();
     await this.driver.wait(until.elementLocated(By.css("body")), 10000);
+    this.logger("Home: navigated back to previous page");
   }
 }

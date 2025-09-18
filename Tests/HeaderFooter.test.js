@@ -1,6 +1,8 @@
 import { Builder, until } from "selenium-webdriver";
 import { expect } from "chai";
 import BaseNodePage from "../Pages/baseNodePage.js";
+import { captureOnFailure } from "../Utils/saveHelpers.js";
+import { createTestLogger } from "../Utils/logger.js";
 
 describe("Nodejs Header and Footer", function () {
   this.timeout(40000);
@@ -12,6 +14,23 @@ describe("Nodejs Header and Footer", function () {
     driver = await new Builder().forBrowser("chrome").build();
     basePage = new BaseNodePage(driver);
     await basePage.open();
+  });
+
+  beforeEach(function () {
+    const logger = createTestLogger(this.currentTest.fullTitle());
+    basePage.setLogger(logger);
+    logger("HeaderFooter: starting test");
+  });
+
+  afterEach(async function () {
+    if (this.currentTest.isFailed()) {
+      const title = this.currentTest.fullTitle();
+      const { screenshotPath, pagePath } = await captureOnFailure(
+        driver,
+        title,
+      );
+      console.log("Saved failure artifacts:", screenshotPath, pagePath);
+    }
   });
 
   after(async function () {

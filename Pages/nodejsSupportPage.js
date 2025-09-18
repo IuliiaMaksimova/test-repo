@@ -13,16 +13,23 @@ export default class NodejsSupportPage extends BaseNodePage {
   }
 
   async isPageDisplayed() {
-    this.logger("Support: isPageDisplayed");
+    this.logger("Support: isPageDisplayed - checking page content");
     await this.driver.wait(until.elementLocated(By.css("body")), 15000);
+    this.logger("Support: body element found");
+
     const title = await this.driver.wait(
       until.elementLocated(this.pageTitle),
       15000,
     );
+    this.logger("Support: page title found");
+
     const titleVisible = await title.isDisplayed();
     const links = await this.driver.findElements(this.supportLinks);
     const linkVisible = links.length > 0 ? await links[0].isDisplayed() : false;
-    // Consider page displayed if title and at least one relevant support link is visible
+
+    this.logger(
+      `Support: title visible: ${titleVisible}, support links visible: ${linkVisible}`,
+    );
     return titleVisible && linkVisible;
   }
 }
