@@ -1,5 +1,4 @@
 import { By, until } from "selenium-webdriver";
-import NodejsBasePage from "./baseNodePage.js";
 import BaseNodePage from "./baseNodePage.js";
 
 export default class NodejsDownloadPage extends BaseNodePage {
