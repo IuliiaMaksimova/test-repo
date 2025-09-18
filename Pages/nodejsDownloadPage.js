@@ -15,18 +15,26 @@ export default class NodejsDownloadPage extends BaseNodePage {
   }
 
   async isPageDisplayed() {
-    this.logger("Download: isPageDisplayed"); // Ensure the page is not empty and key components are present
+    this.logger("Download: isPageDisplayed - checking page content");
     await this.driver.wait(until.elementLocated(By.css("body")), 15000);
+    this.logger("Download: body element found");
+
     const title = await this.driver.wait(
       until.elementLocated(this.pageTitle),
       15000,
     );
+    this.logger("Download: page title found");
+
     const anyCta = await this.driver.findElements(this.primaryCtas);
     const macBtn = await this.driver.findElements(this.macOsButton);
     const titleVisible = await title.isDisplayed();
     const hasVisibleCta =
       (macBtn.length > 0 && (await macBtn[0].isDisplayed())) ||
       (anyCta.length > 0 && (await anyCta[0].isDisplayed()));
+
+    this.logger(
+      `Download: title visible: ${titleVisible}, CTA visible: ${hasVisibleCta}`,
+    );
     return titleVisible && hasVisibleCta;
   }
 

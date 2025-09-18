@@ -19,10 +19,10 @@ describe("Nodejs Home Page", function () {
   });
 
   beforeEach(async function () {
-    this.logger = createTestLogger(this.currentTest.fullTitle());
-    nodeHome = new nodejsHomePage(driver, this.logger);
-    downloadPage = new nodejsDownloadPage(driver, this.logger);
-    supportPage = new nodejsSupportPage(driver, this.logger);
+    const logger = createTestLogger(this.currentTest.fullTitle());
+    nodeHome = new nodejsHomePage(driver, logger);
+    downloadPage = new nodejsDownloadPage(driver, logger);
+    supportPage = new nodejsSupportPage(driver, logger);
     await nodeHome.open();
   });
 
@@ -31,7 +31,7 @@ describe("Nodejs Home Page", function () {
   });
 
   afterEach(async function () {
-    if (this.currentTest && this.currentTest.isFailed()) {
+    if (this.currentTest.isFailed()) {
       const title = this.currentTest.fullTitle();
       const { screenshotPath, pagePath } = await captureOnFailure(
         driver,
