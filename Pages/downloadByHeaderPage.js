@@ -8,7 +8,7 @@ export default class NodejsDownloadByHeaderPage extends BaseNodePage {
   }
 
   async isPageDisplayed() {
-    this.logger("isPageDisplayed");
+    this.logger.info("isPageDisplayed");
     await this.driver.wait(until.elementLocated(By.css("body")), 15000);
     const title = await this.driver.wait(
       until.elementLocated(this.downloadButton),
