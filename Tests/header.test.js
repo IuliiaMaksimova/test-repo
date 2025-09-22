@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { TestSteps } from '../Utils/helpers/testSteps.js';
+import TestSteps from '../Utils/helpers/testSteps.js';
 import { HEADER_BUTTONS_COUNT } from '../Utils/helpers/constants.js';
 
 describe('Nodejs Header', function () {

@@ -7,6 +7,19 @@ export default class basePage {
     this.logger = logger || { info: () => {} };
   }
 
+  async isElementVisible(locator) {
+    this.logger.info(`Base: isElementVisible ${JSON.stringify(locator)}`);
+    const element = await this.waitIsPresented(locator, 10000, 1000);
+    return element.isDisplayed();
+  }
+
+  async waitForHeader() {
+    this.logger.info('Base: waitForHeader');
+    await this.waitIsPresented(By.css('body'), 15000, 1000);
+    const header = await this.waitIsPresented(By.css('.index-module__MxFfiW__main.hidden.peer-checked\\:flex'), 20000, 1000);
+    await this.driver.wait(until.elementIsVisible(header), 10000);
+  }
+
   setLogger(logger) {
     this.logger = logger && typeof logger.info === 'function' ? logger : { info: () => {} };
   }

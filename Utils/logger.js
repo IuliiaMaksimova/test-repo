@@ -18,19 +18,6 @@ function createTestRunDataDir(dirName) {
   return testDataDir;
 }
 
-export const getTestLogger = (logFileName, dir) => {
-  let testsDataDir = '';
-  if (dir) {
-    testsDataDir = createTestRunDataDir(dir);
-  } else {
-    testsDataDir = createTestRunDataDir(logFileName);
-  }
-  const clearedLogFileName = logFileName.replace(/[ |,]/gi, '_');
-  const fullPath = path.resolve(testsDataDir, clearedLogFileName + '.log');
-  const simpleLogger = createSimpleFileLogger(fullPath);
-  return simpleLogger;
-};
-
 export function createTestLogger(testTitle) {
   const safeTitle = String(testTitle || 'unnamed')
     .replace(/[^a-z0-9\-_]/gi, '_')
@@ -56,4 +43,4 @@ export function createTestLogger(testTitle) {
   };
 }
 
-export default { getTestLogger, createTestLogger };
+export default { createTestLogger };

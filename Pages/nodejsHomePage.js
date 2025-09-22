@@ -84,11 +84,4 @@ export default class NodejsHomePage extends BaseNodePage {
       this.logger.info('Home: Navigated directly to support page');
     }
   }
-
-  async goBack() {
-    this.logger.info('Home: goBack');
-    await this.driver.navigate().back();
-    await this.driver.wait(until.elementLocated(By.css('body')), 10000);
-    this.logger.info('Home: navigated back to previous page');
-  }
 }

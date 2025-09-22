@@ -6,39 +6,25 @@ import { registerAfterEach } from '../afterEach.js';
 
 class TestStateManager {
   constructor() {
-    this.failedTests = new Set();
-    this.currentSuite = null;
+    this.hasFailed = false;
   }
 
-  setCurrentSuite(suiteName) {
-    this.currentSuite = suiteName;
+  markFailed() {
+    this.hasFailed = true;
   }
 
-  markTestAsFailed(testName) {
-    this.failedTests.add(`${this.currentSuite}:${testName}`);
-  }
-
-  isTestFailed(testName) {
-    return this.failedTests.has(`${this.currentSuite}:${testName}`);
-  }
-
-  hasAnyFailedTests() {
-    return this.failedTests.size > 0;
-  }
-
-  getFailedTests() {
-    return Array.from(this.failedTests);
+  shouldSkip() {
+    return this.hasFailed;
   }
 
   reset() {
-    this.failedTests.clear();
-    this.currentSuite = null;
+    this.hasFailed = false;
   }
 }
 
-const testStateManager = new TestStateManager();
+const testState = new TestStateManager();
 
-export class TestSteps {
+class TestSteps {
   constructor(suiteName) {
     this.suiteName = suiteName;
     this.driver = null;
@@ -51,7 +37,6 @@ export class TestSteps {
     this.basePage = new BaseNodePage(this.driver);
     await this.basePage.open();
     registerAfterEach(this.driver);
-    testStateManager.setCurrentSuite(this.suiteName);
   }
 
   async teardown() {
@@ -65,93 +50,83 @@ export class TestSteps {
     this.basePage.setLogger(this.logger);
   }
 
+  async executeStep(stepName, stepFunction) {
+    this.logger.info(`${stepName}: Starting`);
+    try {
+      const result = await stepFunction();
+      this.logger.info(`${stepName}: Completed successfully`);
+      return result;
+    } catch (error) {
+      this.logger.info(`${stepName}: Failed - ${error.message}`);
+      testState.markFailed();
+      throw error;
+    }
+  }
+
   async step1_PageOpensAndDisplays() {
-    this.logger.info('Step 1: Checking if page opens and displays');
-
-    await this.basePage.waitForHeader();
-
-    const bodyElement = await this.basePage.waitIsPresented({ using: 'css selector', value: 'body' });
-    expect(bodyElement).to.exist;
-
-    this.logger.info('Step 1: Page opened and displayed successfully');
-    return true;
+    return this.executeStep('Step 1: Page opens and displays', async () => {
+      await this.basePage.waitForHeader();
+      const body = await this.basePage.waitIsPresented({ using: 'css selector', value: 'body' });
+      expect(body).to.exist;
+    });
   }
 
   async step2_AllButtonsPresentAndVisible() {
-    this.logger.info('Step 2: Checking if all buttons are present and visible');
-
-    const headerLinks = await this.basePage.getAllHeaderLinks();
-    expect(headerLinks.length).to.be.greaterThan(0);
-
-    const footerLinks = await this.basePage.getAllFooterLinks();
-    expect(footerLinks.length).to.be.greaterThan(0);
-
-    this.logger.info('Step 2: All buttons are present and visible');
-    return true;
+    return this.executeStep('Step 2: All buttons present and visible', async () => {
+      const [headerLinks, footerLinks] = await Promise.all([
+        this.basePage.getAllHeaderLinks(),
+        this.basePage.getAllFooterLinks(),
+      ]);
+      expect(headerLinks.length).to.be.greaterThan(0);
+      expect(footerLinks.length).to.be.greaterThan(0);
+    });
   }
 
   async step3_ClickButton(buttonLocator, buttonName) {
-    this.logger.info(`Step 3: Clicking ${buttonName} button`);
-
-    await this.basePage.clickElement(buttonLocator);
-
-    this.logger.info(`Step 3: ${buttonName} button clicked successfully`);
-    return true;
+    return this.executeStep(`Step 3: Click ${buttonName}`, async () => {
+      await this.basePage.clickElement(buttonLocator);
+    });
   }
 
   async step4_NavigateToPage(expectedUrlPart) {
-    this.logger.info(`Step 4: Navigating to page containing '${expectedUrlPart}'`);
+    return this.executeStep(`Step 4: Navigate to ${expectedUrlPart}`, async () => {
+      await this.driver.wait(async () => {
+        const url = await this.driver.getCurrentUrl();
+        return url.includes(expectedUrlPart) || url.includes('openjsf') || url.includes('openjs');
+      }, 15000);
 
-    await this.driver.wait(async () => {
-      const currentUrl = await this.driver.getCurrentUrl();
-      return currentUrl.includes(expectedUrlPart) || currentUrl.includes('openjsf') || currentUrl.includes('openjs');
-    }, 15000);
-
-    const currentUrl = await this.driver.getCurrentUrl();
-    const isExpectedPage =
-      currentUrl.includes(expectedUrlPart) || currentUrl.includes('openjsf') || currentUrl.includes('openjs');
-    expect(isExpectedPage).to.be.true;
-
-    this.logger.info(`Step 4: Successfully navigated to page with URL: ${currentUrl}`);
-    return true;
+      const url = await this.driver.getCurrentUrl();
+      expect(url).to.match(new RegExp(`${expectedUrlPart}|openjsf|openjs`, 'i'));
+    });
   }
 
   async step5_PageDisplaysCorrectly() {
-    this.logger.info('Step 5: Checking if page displays correctly');
+    return this.executeStep('Step 5: Page displays correctly', async () => {
+      const body = await this.basePage.waitIsPresented({ using: 'css selector', value: 'body' });
+      expect(body).to.exist;
 
-    const bodyElement = await this.basePage.waitIsPresented({ using: 'css selector', value: 'body' });
-    expect(bodyElement).to.exist;
+      const url = await this.driver.getCurrentUrl();
+      const title = await this.driver.getTitle();
 
-    const currentUrl = await this.driver.getCurrentUrl();
-    const title = await this.driver.getTitle();
-
-    if (currentUrl.includes('.pdf')) {
-      this.logger.info(`Step 5: PDF file loaded successfully: ${currentUrl}`);
-      expect(currentUrl).to.match(/privacy|security|openjsf|openjs/i);
-    } else {
-      expect(title).to.not.be.empty;
-      this.logger.info(`Step 5: Page displays correctly with title: ${title}`);
-    }
-
-    this.logger.info(`Step 5: Page displays correctly - URL: ${currentUrl}, Title: ${title}`);
-    return true;
+      if (url.includes('.pdf')) {
+        expect(url).to.match(/privacy|security|openjsf|openjs/i);
+      } else {
+        expect(title).to.not.be.empty;
+      }
+    });
   }
 
   async step6_ReturnToMainPage() {
-    this.logger.info('Step 6: Returning to main page');
-
-    await this.basePage.goBack();
-
-    const currentUrl = await this.driver.getCurrentUrl();
-    expect(currentUrl).to.include('nodejs.org');
-
-    this.logger.info('Step 6: Successfully returned to main page');
-    return true;
+    return this.executeStep('Step 6: Return to main page', async () => {
+      await this.basePage.goBack();
+      const url = await this.driver.getCurrentUrl();
+      expect(url).to.include('nodejs.org');
+    });
   }
 
   shouldSkipTest(testName) {
-    if (testStateManager.hasAnyFailedTests()) {
-      this.logger.info(`Skipping ${testName} due to previous test failures`);
+    if (testState.shouldSkip()) {
+      this.logger.info(`Skipping ${testName} due to previous failures`);
       return true;
     }
     return false;
@@ -159,7 +134,7 @@ export class TestSteps {
 
   handleTestError(testName, error) {
     this.logger.info(`Test ${testName} failed: ${error.message}`);
-    testStateManager.markTestAsFailed(testName);
+    testState.markFailed();
     throw error;
   }
 }

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { TestSteps } from '../Utils/helpers/testSteps.js';
+import TestSteps from '../Utils/helpers/testSteps.js';
 import nodejsHomePage from '../Pages/nodejsHomePage.js';
 import nodejsDownloadPage from '../Pages/nodejsDownloadPage.js';
 import nodejsSupportPage from '../Pages/nodejsSupportPage.js';
@@ -8,9 +8,6 @@ describe('Nodejs Home Page', function () {
   this.timeout(30000);
 
   let testSteps;
-  let nodeHome;
-  let downloadPage;
-  let supportPage;
 
   before(async function () {
     testSteps = new TestSteps('HomePage');
@@ -23,10 +20,9 @@ describe('Nodejs Home Page', function () {
 
   beforeEach(async function () {
     testSteps.setLogger(this.currentTest.fullTitle());
-
-    nodeHome = new nodejsHomePage(testSteps.driver, testSteps.logger);
-    downloadPage = new nodejsDownloadPage(testSteps.driver, testSteps.logger);
-    supportPage = new nodejsSupportPage(testSteps.driver, testSteps.logger);
+    this.nodeHome = new nodejsHomePage(testSteps.driver, testSteps.logger);
+    this.downloadPage = new nodejsDownloadPage(testSteps.driver, testSteps.logger);
+    this.supportPage = new nodejsSupportPage(testSteps.driver, testSteps.logger);
   });
 
   it('Step 1: Page opens and displays', async function () {
@@ -49,7 +45,7 @@ describe('Nodejs Home Page', function () {
     try {
       testSteps.logger.info('Step 2: Checking if main text is displayed');
 
-      const isVisible = await nodeHome.isMainTextDisplayed();
+      const isVisible = await this.nodeHome.isMainTextDisplayed();
       expect(isVisible).to.be.true;
 
       testSteps.logger.info('Step 2: Main text is displayed successfully');
@@ -66,7 +62,7 @@ describe('Nodejs Home Page', function () {
     try {
       testSteps.logger.info('Step 3: Checking if Get Node.js button is displayed');
 
-      const isVisible = await nodeHome.isGetNodeButtonDisplayed();
+      const isVisible = await this.nodeHome.isGetNodeButtonDisplayed();
       expect(isVisible).to.be.true;
 
       testSteps.logger.info('Step 3: Get Node.js button is displayed successfully');
@@ -83,7 +79,7 @@ describe('Nodejs Home Page', function () {
     try {
       testSteps.logger.info('Step 4: Clicking Get Node.js button');
 
-      await nodeHome.clickGetNodeButton();
+      await this.nodeHome.clickGetNodeButton();
 
       testSteps.logger.info('Step 4: Get Node.js button clicked successfully');
     } catch (error) {
@@ -111,7 +107,7 @@ describe('Nodejs Home Page', function () {
     try {
       testSteps.logger.info('Step 6: Checking if Download page displays correctly');
 
-      const isPageVisible = await downloadPage.isPageDisplayed();
+      const isPageVisible = await this.downloadPage.isPageDisplayed();
       expect(isPageVisible).to.be.true;
 
       testSteps.logger.info('Step 6: Download page displays correctly');
@@ -128,7 +124,7 @@ describe('Nodejs Home Page', function () {
     try {
       testSteps.logger.info('Step 7: Returning to main page');
 
-      await downloadPage.goBack();
+      await this.downloadPage.goBack();
 
       testSteps.logger.info('Step 7: Successfully returned to main page');
     } catch (error) {
@@ -144,7 +140,7 @@ describe('Nodejs Home Page', function () {
     try {
       testSteps.logger.info('Step 8: Checking if Get Support button is displayed');
 
-      const isVisible = await nodeHome.isGetSupportButtonDisplayed();
+      const isVisible = await this.nodeHome.isGetSupportButtonDisplayed();
       expect(isVisible).to.be.true;
 
       testSteps.logger.info('Step 8: Get Support button is displayed successfully');
@@ -161,7 +157,7 @@ describe('Nodejs Home Page', function () {
     try {
       testSteps.logger.info('Step 9: Clicking Get Support button');
 
-      await nodeHome.clickGetSupportButton();
+      await this.nodeHome.clickGetSupportButton();
 
       testSteps.logger.info('Step 9: Get Support button clicked successfully');
     } catch (error) {
@@ -177,7 +173,7 @@ describe('Nodejs Home Page', function () {
     try {
       testSteps.logger.info('Step 10: Final return to main page');
 
-      await nodeHome.goBack();
+      await this.nodeHome.goBack();
 
       testSteps.logger.info('Step 10: Successfully returned to main page');
     } catch (error) {
