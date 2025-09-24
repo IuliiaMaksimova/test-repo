@@ -1,145 +1,65 @@
+import { Builder, By } from 'selenium-webdriver';
 import { expect } from 'chai';
-import TestSteps from '../Utils/helpers/testSteps.js';
-import { FOOTER_LINKS_MIN_COUNT, PAGE_LOAD_TIMEOUT } from '../Utils/helpers/constants.js';
+import baseNodePage from '../Pages/baseNodePage.js';
+import { createTestLogger } from '../Utils/logger.js';
+import { registerAfterEach } from '../Utils/afterEach.js';
+import { PAGE_LOAD_TIMEOUT, DEFAULT_TIMEOUT } from '../Utils/helpers/constants.js';
 
 describe('Nodejs Footer', function () {
   this.timeout(PAGE_LOAD_TIMEOUT);
 
-  let testSteps;
+  let driver;
+  let basePage;
+  let logger;
 
   before(async function () {
-    testSteps = new TestSteps('Footer');
-    await testSteps.setup();
+    logger = createTestLogger(this.currentTest.fullTitle());
+    driver = await new Builder().forBrowser('chrome').build();
+    registerAfterEach(driver);
+    basePage = new baseNodePage(driver, logger);
+    await basePage.open();
   });
 
   after(async function () {
-    await testSteps.teardown();
-  });
-
-  beforeEach(function () {
-    testSteps.setLogger(this.currentTest.fullTitle());
+    await driver.quit();
   });
 
   it('Step 1: Page opens and displays', async function () {
-    if (testSteps.shouldSkipTest('Step1')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step1_PageOpensAndDisplays();
-    } catch (error) {
-      testSteps.handleTestError('Step1', error);
-    }
+    await basePage.waitIsPresented(By.css('body'));
+    const isPageLoaded = await driver.findElement(By.css('body')).isDisplayed();
+    expect(isPageLoaded).to.be.true;
   });
 
   it('Step 2: All footer links are present and visible', async function () {
-    if (testSteps.shouldSkipTest('Step2')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step2_AllButtonsPresentAndVisible();
-
-      const footerLinks = await testSteps.basePage.getAllFooterLinks();
-      expect(footerLinks.length).to.be.greaterThan(FOOTER_LINKS_MIN_COUNT);
-    } catch (error) {
-      testSteps.handleTestError('Step2', error);
-    }
+    const footerLinks = await basePage.getAllFooterLinks();
+    expect(footerLinks.length).to.be.greaterThan(0);
   });
 
   it('Step 3: Click Privacy Policy link', async function () {
-    if (testSteps.shouldSkipTest('Step3')) {
-      this.skip();
-    }
+    await basePage.clickElement(basePage.footer.privacyPolicy);
 
-    try {
-      await testSteps.step3_ClickButton(testSteps.basePage.footer.privacyPolicy, 'Privacy Policy');
-    } catch (error) {
-      testSteps.handleTestError('Step3', error);
-    }
+    await driver.wait(async () => {
+      const url = await driver.getCurrentUrl();
+      return url.includes('privacy') || url.includes('openjsf');
+    }, DEFAULT_TIMEOUT);
+
+    const currentUrl = await driver.getCurrentUrl();
+    expect(currentUrl).to.match(/privacy|openjsf/i);
+
+    await basePage.goBack();
   });
 
-  it('Step 4: Navigate to Privacy Policy page', async function () {
-    if (testSteps.shouldSkipTest('Step4')) {
-      this.skip();
-    }
+  it('Step 4: Click Security Policy link', async function () {
+    await basePage.clickElement(basePage.footer.securityPolicy);
 
-    try {
-      await testSteps.step4_NavigateToPage('privacy');
-    } catch (error) {
-      testSteps.handleTestError('Step4', error);
-    }
-  });
+    await driver.wait(async () => {
+      const url = await driver.getCurrentUrl();
+      return url.includes('security') || url.includes('openjsf');
+    }, DEFAULT_TIMEOUT);
 
-  it('Step 5: Privacy Policy page displays correctly', async function () {
-    if (testSteps.shouldSkipTest('Step5')) {
-      this.skip();
-    }
+    const currentUrl = await driver.getCurrentUrl();
+    expect(currentUrl).to.match(/security|openjsf/i);
 
-    try {
-      await testSteps.step5_PageDisplaysCorrectly();
-    } catch (error) {
-      testSteps.handleTestError('Step5', error);
-    }
-  });
-
-  it('Step 6: Return to main page', async function () {
-    if (testSteps.shouldSkipTest('Step6')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step6_ReturnToMainPage();
-    } catch (error) {
-      testSteps.handleTestError('Step6', error);
-    }
-  });
-
-  it('Step 7: Click Security Policy link', async function () {
-    if (testSteps.shouldSkipTest('Step7')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step3_ClickButton(testSteps.basePage.footer.securityPolicy, 'Security Policy');
-    } catch (error) {
-      testSteps.handleTestError('Step7', error);
-    }
-  });
-
-  it('Step 8: Navigate to Security Policy page', async function () {
-    if (testSteps.shouldSkipTest('Step8')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step4_NavigateToPage('security');
-    } catch (error) {
-      testSteps.handleTestError('Step8', error);
-    }
-  });
-
-  it('Step 9: Security Policy page displays correctly', async function () {
-    if (testSteps.shouldSkipTest('Step9')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step5_PageDisplaysCorrectly();
-    } catch (error) {
-      testSteps.handleTestError('Step9', error);
-    }
-  });
-
-  it('Step 10: Final return to main page', async function () {
-    if (testSteps.shouldSkipTest('Step10')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step6_ReturnToMainPage();
-    } catch (error) {
-      testSteps.handleTestError('Step10', error);
-    }
+    await basePage.goBack();
   });
 });

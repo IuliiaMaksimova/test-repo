@@ -8,13 +8,11 @@ import {
 } from '../Utils/helpers/constants.js';
 import { Logger } from 'simple-node-logger';
 
-/** @type {Logger} */
-this.logger = logger;
-
 export default class basePage {
   constructor(driver, logger = null) {
     this.driver = driver;
-    this.logger = Logger;
+    /** @type {Logger} */
+    this.logger = logger;
   }
 
   async isElementVisible(locator) {

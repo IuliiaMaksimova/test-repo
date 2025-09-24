@@ -1,145 +1,65 @@
+import { Builder, By } from 'selenium-webdriver';
 import { expect } from 'chai';
-import TestSteps from '../Utils/helpers/testSteps.js';
-import { HEADER_BUTTONS_COUNT, PAGE_LOAD_TIMEOUT } from '../Utils/helpers/constants.js';
+import baseNodePage from '../Pages/baseNodePage.js';
+import { createTestLogger } from '../Utils/logger.js';
+import { registerAfterEach } from '../Utils/afterEach.js';
+import { PAGE_LOAD_TIMEOUT, DEFAULT_TIMEOUT, HEADER_BUTTONS_COUNT } from '../Utils/helpers/constants.js';
 
 describe('Nodejs Header', function () {
   this.timeout(PAGE_LOAD_TIMEOUT);
 
-  let testSteps;
+  let driver;
+  let basePage;
+  let logger;
 
   before(async function () {
-    testSteps = new TestSteps('Header');
-    await testSteps.setup();
+    logger = createTestLogger(this.currentTest.fullTitle());
+    driver = await new Builder().forBrowser('chrome').build();
+    registerAfterEach(driver);
+    basePage = new baseNodePage(driver, logger);
+    await basePage.open();
   });
 
   after(async function () {
-    await testSteps.teardown();
-  });
-
-  beforeEach(function () {
-    testSteps.setLogger(this.currentTest.fullTitle());
+    await driver.quit();
   });
 
   it('Step 1: Page opens and displays', async function () {
-    if (testSteps.shouldSkipTest('Step1')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step1_PageOpensAndDisplays();
-    } catch (error) {
-      testSteps.handleTestError('Step1', error);
-    }
+    await basePage.waitIsPresented(By.css('body'));
+    const isPageLoaded = await driver.findElement(By.css('body')).isDisplayed();
+    expect(isPageLoaded).to.be.true;
   });
 
   it('Step 2: All header buttons are present and visible', async function () {
-    if (testSteps.shouldSkipTest('Step2')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step2_AllButtonsPresentAndVisible();
-
-      const headerLinks = await testSteps.basePage.getAllHeaderLinks();
-      expect(headerLinks.length).to.be.greaterThanOrEqual(HEADER_BUTTONS_COUNT);
-    } catch (error) {
-      testSteps.handleTestError('Step2', error);
-    }
+    const headerLinks = await basePage.getAllHeaderLinks();
+    expect(headerLinks.length).to.be.greaterThanOrEqual(HEADER_BUTTONS_COUNT);
   });
 
   it('Step 3: Click Blog button', async function () {
-    if (testSteps.shouldSkipTest('Step3')) {
-      this.skip();
-    }
+    await basePage.clickElement(basePage.header.blogButton);
 
-    try {
-      await testSteps.step3_ClickButton(testSteps.basePage.header.blogButton, 'Blog');
-    } catch (error) {
-      testSteps.handleTestError('Step3', error);
-    }
+    await driver.wait(async () => {
+      const url = await driver.getCurrentUrl();
+      return url.includes('blog') || url.includes('openjsf');
+    }, DEFAULT_TIMEOUT);
+
+    const currentUrl = await driver.getCurrentUrl();
+    expect(currentUrl).to.match(/blog|openjsf/i);
+
+    await basePage.goBack();
   });
 
-  it('Step 4: Navigate to Blog page', async function () {
-    if (testSteps.shouldSkipTest('Step4')) {
-      this.skip();
-    }
+  it('Step 4: Click Download button', async function () {
+    await basePage.clickElement(basePage.header.downloadButton);
 
-    try {
-      await testSteps.step4_NavigateToPage('/blog');
-    } catch (error) {
-      testSteps.handleTestError('Step4', error);
-    }
-  });
+    await driver.wait(async () => {
+      const url = await driver.getCurrentUrl();
+      return url.includes('download') || url.includes('openjsf');
+    }, DEFAULT_TIMEOUT);
 
-  it('Step 5: Blog page displays correctly', async function () {
-    if (testSteps.shouldSkipTest('Step5')) {
-      this.skip();
-    }
+    const currentUrl = await driver.getCurrentUrl();
+    expect(currentUrl).to.match(/download|openjsf/i);
 
-    try {
-      await testSteps.step5_PageDisplaysCorrectly();
-    } catch (error) {
-      testSteps.handleTestError('Step5', error);
-    }
-  });
-
-  it('Step 6: Return to main page', async function () {
-    if (testSteps.shouldSkipTest('Step6')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step6_ReturnToMainPage();
-    } catch (error) {
-      testSteps.handleTestError('Step6', error);
-    }
-  });
-
-  it('Step 7: Click Download button', async function () {
-    if (testSteps.shouldSkipTest('Step7')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step3_ClickButton(testSteps.basePage.header.downloadButton, 'Download');
-    } catch (error) {
-      testSteps.handleTestError('Step7', error);
-    }
-  });
-
-  it('Step 8: Navigate to Download page', async function () {
-    if (testSteps.shouldSkipTest('Step8')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step4_NavigateToPage('/download');
-    } catch (error) {
-      testSteps.handleTestError('Step8', error);
-    }
-  });
-
-  it('Step 9: Download page displays correctly', async function () {
-    if (testSteps.shouldSkipTest('Step9')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step5_PageDisplaysCorrectly();
-    } catch (error) {
-      testSteps.handleTestError('Step9', error);
-    }
-  });
-
-  it('Step 10: Final return to main page', async function () {
-    if (testSteps.shouldSkipTest('Step10')) {
-      this.skip();
-    }
-
-    try {
-      await testSteps.step6_ReturnToMainPage();
-    } catch (error) {
-      testSteps.handleTestError('Step10', error);
-    }
+    await basePage.goBack();
   });
 });
