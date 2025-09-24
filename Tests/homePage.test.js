@@ -3,9 +3,10 @@ import TestSteps from '../Utils/helpers/testSteps.js';
 import nodejsHomePage from '../Pages/nodejsHomePage.js';
 import nodejsDownloadPage from '../Pages/nodejsDownloadPage.js';
 import nodejsSupportPage from '../Pages/nodejsSupportPage.js';
+import { PAGE_LOAD_TIMEOUT } from '../Utils/helpers/constants.js';
 
 describe('Nodejs Home Page', function () {
-  this.timeout(30000);
+  this.timeout(PAGE_LOAD_TIMEOUT);
 
   let testSteps;
 

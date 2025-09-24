@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import BaseNodePage from '../../Pages/baseNodePage.js';
 import { createTestLogger } from '../logger.js';
 import { registerAfterEach } from '../afterEach.js';
+import { ELEMENT_WAIT_TIMEOUT } from './constants.js';
 
 class TestStateManager {
   constructor() {
@@ -47,7 +48,7 @@ class TestSteps {
 
   setLogger(testTitle) {
     this.logger = createTestLogger(testTitle);
-    this.basePage.setLogger(this.logger);
+    this.basePage.logger = this.logger;
   }
 
   async executeStep(stepName, stepFunction) {
@@ -93,7 +94,7 @@ class TestSteps {
       await this.driver.wait(async () => {
         const url = await this.driver.getCurrentUrl();
         return url.includes(expectedUrlPart) || url.includes('openjsf') || url.includes('openjs');
-      }, 15000);
+      }, ELEMENT_WAIT_TIMEOUT);
 
       const url = await this.driver.getCurrentUrl();
       expect(url).to.match(new RegExp(`${expectedUrlPart}|openjsf|openjs`, 'i'));

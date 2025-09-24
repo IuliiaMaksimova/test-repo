@@ -1,7 +1,8 @@
 import { By, until } from 'selenium-webdriver';
-import BaseNodePage from './baseNodePage.js';
+import baseNodePage from './baseNodePage.js';
+import { ELEMENT_WAIT_TIMEOUT } from '../Utils/helpers/constants.js';
 
-export default class NodejsSupportPage extends BaseNodePage {
+export default class NodejsSupportPage extends baseNodePage {
   constructor(driver, logger) {
     super(driver, logger);
     this.pageTitle = By.css('h1');
@@ -11,10 +12,10 @@ export default class NodejsSupportPage extends BaseNodePage {
 
   async isPageDisplayed() {
     this.logger.info('Support: isPageDisplayed - checking page content');
-    await this.driver.wait(until.elementLocated(By.css('body')), 15000);
+    await this.driver.wait(until.elementLocated(By.css('body')), ELEMENT_WAIT_TIMEOUT);
     this.logger.info('Support: body element found');
 
-    const title = await this.driver.wait(until.elementLocated(this.pageTitle), 15000);
+    const title = await this.driver.wait(until.elementLocated(this.pageTitle), ELEMENT_WAIT_TIMEOUT);
     this.logger.info('Support: page title found');
 
     const titleVisible = await title.isDisplayed();

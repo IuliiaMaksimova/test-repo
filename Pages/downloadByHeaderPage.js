@@ -1,7 +1,8 @@
 import { By, until } from 'selenium-webdriver';
-import BaseNodePage from './baseNodePage.js';
+import baseNodePage from './baseNodePage.js';
+import { ELEMENT_WAIT_TIMEOUT } from '../Utils/helpers/constants.js';
 
-export default class NodejsDownloadByHeaderPage extends BaseNodePage {
+export default class NodejsDownloadByHeaderPage extends baseNodePage {
   constructor(driver, logger) {
     super(driver, logger);
     this.downloadButton = By.css('a[href="/en/download"]');
@@ -9,8 +10,8 @@ export default class NodejsDownloadByHeaderPage extends BaseNodePage {
 
   async isPageDisplayed() {
     this.logger.info('isPageDisplayed');
-    await this.driver.wait(until.elementLocated(By.css('body')), 15000);
-    const title = await this.driver.wait(until.elementLocated(this.downloadButton), 15000);
+    await this.driver.wait(until.elementLocated(By.css('body')), ELEMENT_WAIT_TIMEOUT);
+    const title = await this.driver.wait(until.elementLocated(this.downloadButton), ELEMENT_WAIT_TIMEOUT);
     const anyCta = await this.driver.findElements(this.downloadButton);
     const titleVisible = await title.isDisplayed();
     const hasVisibleCta =

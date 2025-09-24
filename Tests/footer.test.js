@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import TestSteps from '../Utils/helpers/testSteps.js';
-import { FOOTER_LINKS_MIN_COUNT } from '../Utils/helpers/constants.js';
+import { FOOTER_LINKS_MIN_COUNT, PAGE_LOAD_TIMEOUT } from '../Utils/helpers/constants.js';
 
 describe('Nodejs Footer', function () {
-  this.timeout(30000);
+  this.timeout(PAGE_LOAD_TIMEOUT);
 
   let testSteps;
 

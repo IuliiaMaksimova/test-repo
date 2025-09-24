@@ -1,8 +1,5 @@
-import pkg from 'simple-node-logger';
 import path from 'path';
 import fs from 'fs';
-
-const { createSimpleFileLogger } = pkg;
 
 const LOG_DIR = path.resolve('test-results/logs');
 
@@ -18,29 +15,37 @@ function createTestRunDataDir(dirName) {
   return testDataDir;
 }
 
-export function createTestLogger(testTitle) {
-  const safeTitle = String(testTitle || 'unnamed')
-    .replace(/[^a-z0-9\-_]/gi, '_')
-    .slice(0, 120);
-  const ts = new Date().toISOString().replace(/[:.]/g, '-');
-  const file = path.join(LOG_DIR, `${safeTitle}__${ts}.log`);
+export const createTestLogger = (logFileName, dir) => {
+  let testsDataDir = '';
+  if (dir) {
+    testsDataDir = createTestRunDataDir(dir);
+  } else {
+    testsDataDir = createTestRunDataDir(logFileName);
+  }
+  const clearedLogFileName = logFileName.replace(/[ |,]/gi, '_');
+  const fullPath = path.resolve(testsDataDir, clearedLogFileName + '.log');
 
-  const logFunction = message => {
-    const timestamp = new Date().toISOString();
-    const logLine = `[${timestamp}] INFO: ${message}\n`;
-
-    fs.appendFileSync(file, logLine);
-
-    const mainLogFile = path.join(LOG_DIR, 'test-run.log');
-    fs.appendFileSync(mainLogFile, `[${testTitle}] ${logLine}`);
-
-    console.log(`[${timestamp}] INFO: ${message}`);
+  // Создаем простой logger без external dependencies
+  const logger = {
+    info: message => {
+      const timestamp = new Date().toISOString();
+      const logMessage = `[${timestamp}] INFO: ${message}\n`;
+      fs.appendFileSync(fullPath, logMessage);
+      console.log(`[${timestamp}] INFO: ${message}`);
+    },
+    error: message => {
+      const timestamp = new Date().toISOString();
+      const logMessage = `[${timestamp}] ERROR: ${message}\n`;
+      fs.appendFileSync(fullPath, logMessage);
+      console.error(`[${timestamp}] ERROR: ${message}`);
+    },
+    warn: message => {
+      const timestamp = new Date().toISOString();
+      const logMessage = `[${timestamp}] WARN: ${message}\n`;
+      fs.appendFileSync(fullPath, logMessage);
+      console.warn(`[${timestamp}] WARN: ${message}`);
+    },
   };
 
-  return {
-    log: logFunction,
-    info: logFunction,
-  };
-}
-
-export default { createTestLogger };
+  return logger;
+};

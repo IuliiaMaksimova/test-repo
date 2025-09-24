@@ -1,7 +1,7 @@
 import { By, until } from 'selenium-webdriver';
-import BaseNodePage from './baseNodePage.js';
+import baseNodePage from './baseNodePage.js';
 
-export default class NodejsHomePage extends BaseNodePage {
+export default class nodejsHomePage extends baseNodePage {
   constructor(driver, logger) {
     super(driver, logger);
     this.mainText = By.css('h1, .hero, .main-content');

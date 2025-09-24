@@ -5,8 +5,7 @@
   "description": "",
   "main": "nodejsHomePageTest.js",
   "scripts": {
-    "test": "mocha ./Tests/*.js ./Utils/helpers/*.test.js --timeout 30000",
-    "test:pool": "mocha ./Tests/*.js --timeout 30000 --require ./Utils/hook.js"
+    "test": "mocha ./Tests/*.js --timeout 30000 --require ./Utils/hook.js"
   },
   "repository": {
     "type": "git",

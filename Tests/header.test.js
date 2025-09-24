@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import TestSteps from '../Utils/helpers/testSteps.js';
-import { HEADER_BUTTONS_COUNT } from '../Utils/helpers/constants.js';
+import { HEADER_BUTTONS_COUNT, PAGE_LOAD_TIMEOUT } from '../Utils/helpers/constants.js';
 
 describe('Nodejs Header', function () {
-  this.timeout(30000);
+  this.timeout(PAGE_LOAD_TIMEOUT);
 
   let testSteps;
 
