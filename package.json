@@ -5,7 +5,7 @@
   "description": "",
   "main": "nodejsHomePageTest.js",
   "scripts": {
-    "test": "mocha ./tests/*.js --timeout 10000"
+    "test": "mocha ./Tests/*.js --timeout 30000 --require ./Utils/hook.js"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/IuliiaMaksimova/test-repo#readme",
   "dependencies": {
-    "selenium-webdriver": "^4.35.0"
+    "selenium-webdriver": "^4.35.0",
+    "simple-logger": "^1.0.1",
+    "simple-node-logger": "^21.8.12"
   },
   "devDependencies": {
     "chai": "^6.0.1",
@@ -27,4 +29,3 @@
     "prettier": "^3.6.2"
   }
 }
-
